@@ -12,6 +12,10 @@ type BookHandlers struct {
 	service *service.BookService
 }
 
+func NewBookHandlers(service *service.BookService) *BookHandlers {
+	return &BookHandlers{service: service}
+}
+
 func (h *BookHandlers) GetBooks(w http.ResponseWriter, r *http.Request) {
 	books, err := h.service.GetBooks()
 	if err != nil {
@@ -86,4 +90,20 @@ func (h *BookHandlers) UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(book)
+}
+
+func (h *BookHandlers) DeleteBook (w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid book ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.service.DeleteBook(id); err != nil {
+		http.Error(w, "Failed to delete book", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
