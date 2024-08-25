@@ -110,6 +110,7 @@ func (s *BookService) SimulateReading(bookID int, duration time.Duration, result
 	book, err := s.GetBookById(bookID)
 	if err != nil || book == nil {
 		results <- fmt.Sprintf("Book %d not found", bookID)
+		return
 	}
 
 	time.Sleep(duration)
